@@ -81,8 +81,8 @@ int DetQuickSelect(std::vector<int>& numbers, int position, int left, int right,
   std::vector<int> five_nums_medians(degree_five / 5 + 5, kLocalMin);
   for (int i = left; i < left + degree_five; i += 5) {
     five_nums_medians[(i - left) / 5] =
-            MedianOfFiveNumbers(numbers[i], numbers[i + 1], numbers[i + 2],
-                                numbers[i + 3], numbers[i + 4]);
+        MedianOfFiveNumbers(numbers[i], numbers[i + 1], numbers[i + 2],
+                            numbers[i + 3], numbers[i + 4]);
   }
   int part_elem = DetQuickSelect(five_nums_medians, degree_five / kTen, 0,
                                  degree_five / 5 - 1, vector_for_long_sort);
@@ -112,15 +112,18 @@ int DetQuickSelect(std::vector<int>& numbers, int position, int left, int right,
                         vector_for_long_sort);
 }
 
-void DetQuickSort(std::vector<int>& numbers, int left, int right, std::vector<int>& vector_for_long_sort) {
+void DetQuickSort(std::vector<int>& numbers, int left, int right,
+                  std::vector<int>& vector_for_long_sort) {
   int length;
   length = right - left + 1;
   if (length != 1 && length != 0) {
-    int part_elem = DetQuickSelect(numbers, left + length / 2, left, right, vector_for_long_sort);
+    int part_elem = DetQuickSelect(numbers, left + length / 2, left, right,
+                                   vector_for_long_sort);
     std::pair<int, int> l_and_r_pivots;
     l_and_r_pivots = Partition(numbers, part_elem, left, right);
     DetQuickSort(numbers, left, l_and_r_pivots.first - 1, vector_for_long_sort);
-    DetQuickSort(numbers, l_and_r_pivots.second + 1, right, vector_for_long_sort);
+    DetQuickSort(numbers, l_and_r_pivots.second + 1, right,
+                 vector_for_long_sort);
   }
 }
 
