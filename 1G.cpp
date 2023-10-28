@@ -1,36 +1,35 @@
+#include <cmath>
 #include <iostream>
-#include <string>
 #include <vector>
 
-void LongLongLSD(std::vector<std::pair<std::string, std::string>>& numbers,
-                 int length, int max_length) {
-  int now_length;
+void LongLongLSD(std::vector<unsigned long long>& numbers, int length) {
   const int kNumberSystem = 10;
-  const int kNullInChar = 48;
+  int max_length = 0;
   for (int i = 0; i < length; ++i) {
-    now_length = static_cast<int>(numbers[i].first.length());
-    for (int j = 0; j < max_length - now_length; ++j) {
-      numbers[i].first = "0" + numbers[i].first;
-    }
+    max_length = std::max(
+        max_length,
+        static_cast<int>(std::log(numbers[i]) / std::log(kNumberSystem)));
   }
-  std::vector<std::pair<std::string, std::string>> numbers_copy(length);
-  std::vector<int> count(kNumberSystem);
-  int number;
-  for (int i = max_length - 1; i >= 0; --i) {
+  std::vector<unsigned long long> numbers_copy(length);
+  std::vector<int> count_of_numbers(kNumberSystem);
+  unsigned long long divider = 1;
+  for (int i = 1; i <= max_length + 2; ++i) {
+    divider *= kNumberSystem;
     for (int j = 0; j < kNumberSystem; ++j) {
-      count[j] = 0;
+      count_of_numbers[j] = 0;
     }
     for (int j = 0; j < length; ++j) {
-      ++count[static_cast<int>(numbers[j].first[i] - kNullInChar)];
+      ++count_of_numbers[(numbers[j] % divider) / (divider / kNumberSystem)];
     }
     for (int j = 1; j < kNumberSystem; ++j) {
-      count[j] += count[j - 1];
+      count_of_numbers[j] += count_of_numbers[j - 1];
     }
 
     for (int j = length - 1; j >= 0; --j) {
-      number = static_cast<int>(numbers[j].first[i] - kNullInChar);
-      numbers_copy[count[number] - 1] = numbers[j];
-      --count[number];
+      numbers_copy[count_of_numbers[(numbers[j] % divider) /
+                                    (divider / kNumberSystem)] -
+                   1] = numbers[j];
+      --count_of_numbers[(numbers[j] % divider) / (divider / kNumberSystem)];
     }
     for (int j = 0; j < length; ++j) {
       numbers[j] = numbers_copy[j];
@@ -43,18 +42,12 @@ int main() {
   std::cin.tie(nullptr);
   int length;
   std::cin >> length;
-  std::vector<std::pair<std::string, std::string>> numbers(length);
-  int max_length = 0;
-  int now_length;
+  std::vector<unsigned long long> numbers(length);
   for (int i = 0; i < length; ++i) {
-    std::cin >> numbers[i].second;
-    numbers[i].first = numbers[i].second;
-    now_length = static_cast<int>(numbers[i].first.length());
-    max_length = std::max(max_length, now_length);
+    std::cin >> numbers[i];
   }
-  LongLongLSD(numbers, length, max_length);
+  LongLongLSD(numbers, length);
   for (int i = 0; i < length; ++i) {
-    std::cout << numbers[i].second << "\n";
+    std::cout << numbers[i] << "\n";
   }
-  return 0;
 }
