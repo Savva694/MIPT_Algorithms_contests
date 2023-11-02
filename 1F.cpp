@@ -23,8 +23,9 @@ int MedianOfFiveNumbers(int num1, int num2, int num3, int num4, int num5) {
   return std::min(num3, num4);
 }
 
-int LongSort(int length, int position, std::vector<int>& vector_for_long_sort) {
+int LongSort(int position, std::vector<int>& vector_for_long_sort) {
   const int kLocalMax = 10004321;
+  int length = static_cast<int>(vector_for_long_sort.size());
   int local_min;
   int min_index = 0;
   for (int i = 0; i < length; ++i) {
@@ -42,17 +43,17 @@ int LongSort(int length, int position, std::vector<int>& vector_for_long_sort) {
   return vector_for_long_sort[position];
 }
 
-int DetQuickSelect(std::vector<int>& numbers, int position, int left,
-                   int right) {
+int DeterministicQuickSelect(std::vector<int>& numbers, int position, int left,
+                             int right) {
   const int kLocalMax = 10004321;
   const int kBaseLength = 10;
-  std::vector<int> vector_for_long_sort(kBaseLength);
   int length = right - left + 1;
   if (length <= kBaseLength) {
+    std::vector<int> vector_for_long_sort(length);
     for (int i = left; i <= right; ++i) {
       vector_for_long_sort[i - left] = numbers[i];
     }
-    return LongSort(length, position - left, vector_for_long_sort);
+    return LongSort(position - left, vector_for_long_sort);
   }
   int degree_five = length;
   while (degree_five % 5 != 0) {
@@ -65,8 +66,8 @@ int DetQuickSelect(std::vector<int>& numbers, int position, int left,
                             numbers[i + 3], numbers[i + 4]);
   }
   const int kNewPosition = 10;
-  int part_elem = DetQuickSelect(five_nums_medians, degree_five / kNewPosition,
-                                 0, degree_five / 5 - 1);
+  int part_elem = DeterministicQuickSelect(
+      five_nums_medians, degree_five / kNewPosition, 0, degree_five / 5 - 1);
   int indicator = left;
   for (int i = left; i <= right; ++i) {
     if (numbers[i] < part_elem) {
@@ -76,18 +77,17 @@ int DetQuickSelect(std::vector<int>& numbers, int position, int left,
   int left_pivot = indicator;
   for (int i = left_pivot; i <= right; ++i) {
     if (numbers[i] == part_elem) {
-      std::swap(numbers[i], numbers[indicator]);
-      ++indicator;
+      std::swap(numbers[i], numbers[indicator++]);
     }
   }
   int right_pivot = indicator - 1;
   if (left_pivot > position) {
-    return DetQuickSelect(numbers, position, left, left_pivot - 1);
+    return DeterministicQuickSelect(numbers, position, left, left_pivot - 1);
   }
   if (left_pivot <= position && position <= right_pivot) {
     return part_elem;
   }
-  return DetQuickSelect(numbers, position, right_pivot + 1, right);
+  return DeterministicQuickSelect(numbers, position, right_pivot + 1, right);
 }
 
 int main() {
@@ -105,6 +105,6 @@ int main() {
         (numbers[i - 1] * kConditionNum1 + numbers[i - 2] * kConditionNum2) %
         kLocalMax;
   }
-  std::cout << DetQuickSelect(numbers, position - 1, 0, length - 1);
+  std::cout << DeterministicQuickSelect(numbers, position - 1, 0, length - 1);
   return 0;
 }
