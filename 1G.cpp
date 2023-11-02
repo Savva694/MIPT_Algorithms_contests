@@ -2,8 +2,9 @@
 #include <iostream>
 #include <vector>
 
-void LongLongLSD(std::vector<unsigned long long>& numbers, int length) {
+void LongLongLSD(std::vector<unsigned long long>& numbers) {
   const int kNumberSystem = 10;
+  int length = static_cast<int>(numbers.size());
   int max_length = 0;
   for (int i = 0; i < length; ++i) {
     max_length = std::max(
@@ -46,7 +47,7 @@ int main() {
   for (int i = 0; i < length; ++i) {
     std::cin >> numbers[i];
   }
-  LongLongLSD(numbers, length);
+  LongLongLSD(numbers);
   for (int i = 0; i < length; ++i) {
     std::cout << numbers[i] << "\n";
   }
