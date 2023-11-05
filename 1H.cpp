@@ -85,17 +85,17 @@ int DeterministicQuickSelect(std::vector<int>& numbers, int position, int left,
                             numbers[i + 3], numbers[i + 4]);
   }
   const int kNewPosition = 10;
-  int part_elem = DeterministicQuickSelect(
+  int partition_elem = DeterministicQuickSelect(
       five_nums_medians, degree_five / kNewPosition, 0, degree_five / 5 - 1);
   int indicator = left;
   for (int i = left; i <= right; ++i) {
-    if (numbers[i] < part_elem) {
+    if (numbers[i] < partition_elem) {
       std::swap(numbers[i], numbers[indicator++]);
     }
   }
   int left_pivot = indicator;
   for (int i = left_pivot; i <= right; ++i) {
-    if (numbers[i] == part_elem) {
+    if (numbers[i] == partition_elem) {
       std::swap(numbers[i], numbers[indicator++]);
     }
   }
@@ -104,7 +104,7 @@ int DeterministicQuickSelect(std::vector<int>& numbers, int position, int left,
     return DeterministicQuickSelect(numbers, position, left, left_pivot - 1);
   }
   if (left_pivot <= position && position <= right_pivot) {
-    return part_elem;
+    return partition_elem;
   }
   return DeterministicQuickSelect(numbers, position, right_pivot + 1, right);
 }
@@ -112,10 +112,10 @@ int DeterministicQuickSelect(std::vector<int>& numbers, int position, int left,
 void DeterministicQuickSort(std::vector<int>& numbers, int left, int right) {
   int length = right - left + 1;
   if (length != 1 && length != 0) {
-    int part_elem =
+    int partition_elem =
         DeterministicQuickSelect(numbers, left + length / 2, left, right);
     std::pair<int, int> left_and_right_pivots =
-        Partition(numbers, part_elem, left, right);
+        Partition(numbers, partition_elem, left, right);
     DeterministicQuickSort(numbers, left, left_and_right_pivots.first - 1);
     DeterministicQuickSort(numbers, left_and_right_pivots.second + 1, right);
   }
