@@ -59,24 +59,24 @@ int DeterministicQuickSelect(std::vector<int>& numbers, int position, int left,
   while (degree_five % 5 != 0) {
     ++degree_five;
   }
-  std::vector<int> five_nums_medians(degree_five / 5 + 5, kLocalMax);
+  std::vector<int> five_numbers_medians(degree_five / 5 + 5, kLocalMax);
   for (int i = left; i < left + degree_five; i += 5) {
-    five_nums_medians[(i - left) / 5] =
+    five_numbers_medians[(i - left) / 5] =
         MedianOfFiveNumbers(numbers[i], numbers[i + 1], numbers[i + 2],
                             numbers[i + 3], numbers[i + 4]);
   }
   const int kNewPosition = 10;
-  int part_elem = DeterministicQuickSelect(
-      five_nums_medians, degree_five / kNewPosition, 0, degree_five / 5 - 1);
+  int partition_element = DeterministicQuickSelect(
+      five_numbers_medians, degree_five / kNewPosition, 0, degree_five / 5 - 1);
   int indicator = left;
   for (int i = left; i <= right; ++i) {
-    if (numbers[i] < part_elem) {
+    if (numbers[i] < partition_element) {
       std::swap(numbers[i], numbers[indicator++]);
     }
   }
   int left_pivot = indicator;
   for (int i = left_pivot; i <= right; ++i) {
-    if (numbers[i] == part_elem) {
+    if (numbers[i] == partition_element) {
       std::swap(numbers[i], numbers[indicator++]);
     }
   }
@@ -85,7 +85,7 @@ int DeterministicQuickSelect(std::vector<int>& numbers, int position, int left,
     return DeterministicQuickSelect(numbers, position, left, left_pivot - 1);
   }
   if (left_pivot <= position && position <= right_pivot) {
-    return part_elem;
+    return partition_element;
   }
   return DeterministicQuickSelect(numbers, position, right_pivot + 1, right);
 }
