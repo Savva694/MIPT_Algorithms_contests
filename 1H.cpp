@@ -78,15 +78,15 @@ int DeterministicQuickSelect(std::vector<int>& numbers, int position, int left,
   while (degree_five % 5 != 0) {
     ++degree_five;
   }
-  std::vector<int> five_nums_medians(degree_five / 5 + 5, kLocalMax);
+  std::vector<int> five_numbers_medians(degree_five / 5 + 5, kLocalMax);
   for (int i = left; i < left + degree_five; i += 5) {
-    five_nums_medians[(i - left) / 5] =
+    five_numbers_medians[(i - left) / 5] =
         MedianOfFiveNumbers(numbers[i], numbers[i + 1], numbers[i + 2],
                             numbers[i + 3], numbers[i + 4]);
   }
   const int kNewPosition = 10;
   int partition_element = DeterministicQuickSelect(
-      five_nums_medians, degree_five / kNewPosition, 0, degree_five / 5 - 1);
+      five_numbers_medians, degree_five / kNewPosition, 0, degree_five / 5 - 1);
   int indicator = left;
   for (int i = left; i <= right; ++i) {
     if (numbers[i] < partition_element) {
