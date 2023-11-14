@@ -2,88 +2,79 @@
 #include <iostream>
 #include <string>
 
-void Enqueue(std::deque<int>& students, std::deque<int>& minimal, int student) {
-  students.push_back(student);
-  while (!(minimal.empty()) && minimal.back() > students.back()) {
-    minimal.pop_back();
-  }
-  minimal.push_back(students.back());
-}
+class DistributingHat {
+ private:
+  std::deque<int> students_;
+  std::deque<int> minimal_;
 
-int Dequeue(std::deque<int>& students, std::deque<int>& minimal) {
-  if (students.empty()) {
-    return 0;
+ public:
+  void Enqueue(int student) {
+    students_.push_back(student);
+    while (!(minimal_.empty()) && minimal_.back() > students_.back()) {
+      minimal_.pop_back();
+    }
+    minimal_.push_back(students_.back());
+    std::cout << "ok" << std::endl;
   }
-  if (minimal.front() == students.front()) {
-    minimal.pop_front();
+
+  void Dequeue() {
+    if (students_.empty()) {
+      std::cout << "error" << std::endl;
+      return;
+    }
+    if (minimal_.front() == students_.front()) {
+      minimal_.pop_front();
+    }
+    std::cout << students_.front() << std::endl;
+    students_.pop_front();
   }
-  int front_student;
-  front_student = students.front();
-  students.pop_front();
-  return front_student;
-}
 
-int Front(std::deque<int>& students) {
-  if (students.empty()) {
-    return 0;
+  void Front() {
+    if (students_.empty()) {
+      std::cout << "error" << std::endl;
+    } else {
+      std::cout << students_.front() << std::endl;
+    }
   }
-  return students.front();
-}
 
-size_t Size(std::deque<int>& students) { return students.size(); }
+  void Size() { std::cout << students_.size() << std::endl; }
 
-void Clear(std::deque<int>& students, std::deque<int>& minimal) {
-  students.clear();
-  minimal.clear();
-}
-
-int SayMin(std::deque<int>& minimal) {
-  if (minimal.empty()) {
-    return 0;
+  void Clear() {
+    students_.clear();
+    minimal_.clear();
+    std::cout << "ok" << std::endl;
   }
-  return minimal.front();
-}
+
+  void SayMin() {
+    if (minimal_.empty()) {
+      std::cout << "error" << std::endl;
+    } else {
+      std::cout << minimal_.front() << std::endl;
+    }
+  }
+};
 
 int main() {
   int requests;
   std::cin >> requests;
-  std::deque<int> students;
-  std::deque<int> minimal;
+  DistributingHat hat;
   std::string command;
   int student;
-  int temporary;
   for (int request = 0; request < requests; ++request) {
     std::cin >> command;
     if (command == "enqueue") {
       std::cin >> student;
-      Enqueue(students, minimal, student);
-      std::cout << "ok" << std::endl;
+      hat.Enqueue(student);
     } else if (command == "dequeue") {
-      temporary = Dequeue(students, minimal);
-      if (temporary == 0) {
-        std::cout << "error" << std::endl;
-      } else {
-        std::cout << temporary << std::endl;
-      }
+      hat.Dequeue();
     } else if (command == "front") {
-      temporary = Front(students);
-      if (temporary == 0) {
-        std::cout << "error" << std::endl;
-      } else {
-        std::cout << temporary << std::endl;
-      }
+      hat.Front();
     } else if (command == "size") {
-      std::cout << Size(students) << std::endl;
+      hat.Size();
     } else if (command == "clear") {
-      Clear(students, minimal);
-      std::cout << "ok" << std::endl;
+      hat.Clear();
     } else {
-      temporary = SayMin(minimal);
-      if (temporary == 0) {
-        std::cout << "error" << std::endl;
-      } else {
-        std::cout << temporary << std::endl;
-      }
+      hat.SayMin();
     }
   }
   return 0;
