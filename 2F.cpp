@@ -2,84 +2,88 @@
 #include <string>
 #include <vector>
 
-void SiftUp(std::vector<std::pair<long long, int>>& heap,
-            std::vector<int>& operations, int index) {
-  while (index > 0 && heap[index].first < heap[(index - 1) / 2].first) {
-    std::swap(operations[heap[index].second],
-              operations[heap[(index - 1) / 2].second]);
-    std::swap(heap[index], heap[(index - 1) / 2]);
-    index = (index - 1) / 2;
-  }
-}
+class Binaryheap {
+ private:
+  std::vector<std::pair<long long, int>> heap_;
+  std::vector<int> operations_;
+  int length_ = 0;
 
-void SiftDown(std::vector<std::pair<long long, int>>& heap, int length,
-              std::vector<int>& operations, int index) {
-  while (2 * index + 1 <= length - 1) {
-    if (2 * index + 1 == length - 1) {
-      if (heap[index].first > heap[2 * index + 1].first) {
-        std::swap(operations[heap[index].second],
-                  operations[heap[2 * index + 1].second]);
-        std::swap(heap[index], heap[2 * index + 1]);
-        index = 2 * index + 1;
-      } else {
-        break;
-      }
-    } else {
-      if (heap[index].first > heap[2 * index + 1].first ||
-          heap[index].first > heap[2 * index + 2].first) {
-        if (heap[2 * index + 1].first > heap[2 * index + 2].first) {
-          std::swap(operations[heap[index].second],
-                    operations[heap[2 * index + 2].second]);
-          std::swap(heap[index], heap[2 * index + 2]);
-          index = 2 * index + 2;
-        } else {
-          std::swap(operations[heap[index].second],
-                    operations[heap[2 * index + 1].second]);
-          std::swap(heap[index], heap[2 * index + 1]);
+ public:
+  void SiftUp(int index) {
+    while (index > 0 && heap_[index].first < heap_[(index - 1) / 2].first) {
+      std::swap(operations_[heap_[index].second],
+                operations_[heap_[(index - 1) / 2].second]);
+      std::swap(heap_[index], heap_[(index - 1) / 2]);
+      index = (index - 1) / 2;
+    }
+  }
+
+  void SiftDown(int index) {
+    while (2 * index + 1 <= length_ - 1) {
+      if (2 * index + 1 == length_ - 1) {
+        if (heap_[index].first > heap_[2 * index + 1].first) {
+          std::swap(operations_[heap_[index].second],
+                    operations_[heap_[2 * index + 1].second]);
+          std::swap(heap_[index], heap_[2 * index + 1]);
           index = 2 * index + 1;
+        } else {
+          break;
         }
       } else {
-        break;
+        if (heap_[index].first > heap_[2 * index + 1].first ||
+            heap_[index].first > heap_[2 * index + 2].first) {
+          if (heap_[2 * index + 1].first > heap_[2 * index + 2].first) {
+            std::swap(operations_[heap_[index].second],
+                      operations_[heap_[2 * index + 2].second]);
+            std::swap(heap_[index], heap_[2 * index + 2]);
+            index = 2 * index + 2;
+          } else {
+            std::swap(operations_[heap_[index].second],
+                      operations_[heap_[2 * index + 1].second]);
+            std::swap(heap_[index], heap_[2 * index + 1]);
+            index = 2 * index + 1;
+          }
+        } else {
+          break;
+        }
       }
     }
   }
-}
 
-void Insert(std::vector<std::pair<long long, int>>& heap, int& length,
-            std::vector<int>& operations, long long number) {
-  operations.push_back(length++);
-  heap.push_back(
-      std::make_pair(number, static_cast<int>(operations.size()) - 1));
-  SiftUp(heap, operations, length - 1);
-}
+  void Insert(long long number) {
+    operations_.push_back(length_++);
+    heap_.push_back(
+        std::make_pair(number, static_cast<int>(operations_.size()) - 1));
+    this->SiftUp(length_ - 1);
+  }
 
-long long GetMin(std::vector<std::pair<long long, int>>& heap) {
-  return heap[0].first;
-}
+  long long GetMin() {
+    operations_.push_back(-1);
+    return heap_[0].first;
+  }
 
-void ExtractMin(std::vector<std::pair<long long, int>>& heap, int& length,
-                std::vector<int>& operations) {
-  std::swap(operations[heap[0].second], operations[heap[length - 1].second]);
-  std::swap(heap[0], heap[--length]);
-  heap.pop_back();
-  SiftDown(heap, length, operations, 0);
-}
+  void ExtractMin() {
+    operations_.push_back(-1);
+    std::swap(operations_[heap_[0].second],
+              operations_[heap_[length_ - 1].second]);
+    std::swap(heap_[0], heap_[--length_]);
+    heap_.pop_back();
+    this->SiftDown(0);
+  }
 
-void DecreaseKey(std::vector<std::pair<long long, int>>& heap,
-                 std::vector<int>& operations, int operation_num,
-                 long long number) {
-  heap[operations[operation_num - 1]].first -= number;
-  SiftUp(heap, operations, operations[operation_num - 1]);
-}
+  void DecreaseKey(int operation_num, long long number) {
+    operations_.push_back(-1);
+    heap_[operations_[operation_num - 1]].first -= number;
+    this->SiftUp(operations_[operation_num - 1]);
+  }
+};
 
 int main() {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(nullptr);
   int questions;
   std::cin >> questions;
-  std::vector<std::pair<long long, int>> heap(0);
-  std::vector<int> operations(0);
-  int length = 0;
+  Binaryheap binary_heap;
   std::string command;
   long long number;
   int operation_num;
@@ -87,18 +91,15 @@ int main() {
     std::cin >> command;
     if (command == "insert") {
       std::cin >> number;
-      Insert(heap, length, operations, number);
+      binary_heap.Insert(number);
     } else if (command == "getMin") {
-      operations.push_back(-1);
-      std::cout << GetMin(heap) << "\n";
+      std::cout << binary_heap.GetMin() << "\n";
     } else if (command == "extractMin") {
-      operations.push_back(-1);
-      ExtractMin(heap, length, operations);
+      binary_heap.ExtractMin();
     } else if (command == "decreaseKey") {
-      operations.push_back(-1);
       std::cin >> operation_num;
       std::cin >> number;
-      DecreaseKey(heap, operations, operation_num, number);
+      binary_heap.DecreaseKey(operation_num, number);
     }
   }
 }
