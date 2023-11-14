@@ -2,199 +2,195 @@
 #include <string>
 #include <vector>
 
-void SiftUpMin(std::vector<std::pair<int, int>>& heap_min,
-               std::vector<std::pair<int, int>>& heap_max, int index) {
-  while (index > 0 && heap_min[index].first < heap_min[(index - 1) / 2].first) {
-    std::swap(heap_max[heap_min[index].second].second,
-              heap_max[heap_min[(index - 1) / 2].second].second);
-    std::swap(heap_min[index], heap_min[(index - 1) / 2]);
-    index = (index - 1) / 2;
-  }
-}
+class Minimax {
+ private:
+  std::vector<std::pair<int, int>> heap_min_;
+  std::vector<std::pair<int, int>> heap_max_;
+  int length_ = 0;
 
-void SiftDownMax(std::vector<std::pair<int, int>>& heap_min,
-                 std::vector<std::pair<int, int>>& heap_max, int length,
-                 int index) {
-  while (2 * index + 1 <= length - 1) {
-    if (2 * index + 1 == length - 1) {
-      if (heap_min[index].first > heap_min[2 * index + 1].first) {
-        std::swap(heap_max[heap_min[index].second].second,
-                  heap_max[heap_min[2 * index + 1].second].second);
-        std::swap(heap_min[index], heap_min[2 * index + 1]);
-        index = 2 * index + 1;
-      } else {
-        break;
-      }
-    } else {
-      if (heap_min[index].first > heap_min[2 * index + 1].first ||
-          heap_min[index].first > heap_min[2 * index + 2].first) {
-        if (heap_min[2 * index + 1].first > heap_min[2 * index + 2].first) {
-          std::swap(heap_max[heap_min[index].second].second,
-                    heap_max[heap_min[2 * index + 2].second].second);
-          std::swap(heap_min[index], heap_min[2 * index + 2]);
-          index = 2 * index + 2;
-        } else {
-          std::swap(heap_max[heap_min[index].second].second,
-                    heap_max[heap_min[2 * index + 1].second].second);
-          std::swap(heap_min[index], heap_min[2 * index + 1]);
+ public:
+  void SiftUpMin(int index) {
+    while (index > 0 &&
+           heap_min_[index].first < heap_min_[(index - 1) / 2].first) {
+      std::swap(heap_max_[heap_min_[index].second].second,
+                heap_max_[heap_min_[(index - 1) / 2].second].second);
+      std::swap(heap_min_[index], heap_min_[(index - 1) / 2]);
+      index = (index - 1) / 2;
+    }
+  }
+
+  void SiftDownMax(int index) {
+    while (2 * index + 1 <= length_ - 1) {
+      if (2 * index + 1 == length_ - 1) {
+        if (heap_min_[index].first > heap_min_[2 * index + 1].first) {
+          std::swap(heap_max_[heap_min_[index].second].second,
+                    heap_max_[heap_min_[2 * index + 1].second].second);
+          std::swap(heap_min_[index], heap_min_[2 * index + 1]);
           index = 2 * index + 1;
+        } else {
+          break;
         }
       } else {
-        break;
+        if (heap_min_[index].first > heap_min_[2 * index + 1].first ||
+            heap_min_[index].first > heap_min_[2 * index + 2].first) {
+          if (heap_min_[2 * index + 1].first > heap_min_[2 * index + 2].first) {
+            std::swap(heap_max_[heap_min_[index].second].second,
+                      heap_max_[heap_min_[2 * index + 2].second].second);
+            std::swap(heap_min_[index], heap_min_[2 * index + 2]);
+            index = 2 * index + 2;
+          } else {
+            std::swap(heap_max_[heap_min_[index].second].second,
+                      heap_max_[heap_min_[2 * index + 1].second].second);
+            std::swap(heap_min_[index], heap_min_[2 * index + 1]);
+            index = 2 * index + 1;
+          }
+        } else {
+          break;
+        }
       }
     }
   }
-}
 
-void SiftUpMax(std::vector<std::pair<int, int>>& heap_min,
-               std::vector<std::pair<int, int>>& heap_max, int index) {
-  while (index > 0 && heap_max[index].first > heap_max[(index - 1) / 2].first) {
-    std::swap(heap_min[heap_max[index].second].second,
-              heap_min[heap_max[(index - 1) / 2].second].second);
-    std::swap(heap_max[index], heap_max[(index - 1) / 2]);
-    index = (index - 1) / 2;
+  void SiftUpMax(int index) {
+    while (index > 0 &&
+           heap_max_[index].first > heap_max_[(index - 1) / 2].first) {
+      std::swap(heap_min_[heap_max_[index].second].second,
+                heap_min_[heap_max_[(index - 1) / 2].second].second);
+      std::swap(heap_max_[index], heap_max_[(index - 1) / 2]);
+      index = (index - 1) / 2;
+    }
   }
-}
 
-void SiftDownMin(std::vector<std::pair<int, int>>& heap_min,
-                 std::vector<std::pair<int, int>>& heap_max, int length,
-                 int index) {
-  while (2 * index + 1 <= length - 1) {
-    if (2 * index + 1 == length - 1) {
-      if (heap_max[index].first < heap_max[2 * index + 1].first) {
-        std::swap(heap_min[heap_max[index].second].second,
-                  heap_min[heap_max[2 * index + 1].second].second);
-        std::swap(heap_max[index], heap_max[2 * index + 1]);
-        index = 2 * index + 1;
-      } else {
-        break;
-      }
-    } else {
-      if (heap_max[index].first < heap_max[2 * index + 1].first ||
-          heap_max[index].first < heap_max[2 * index + 2].first) {
-        if (heap_max[2 * index + 1].first < heap_max[2 * index + 2].first) {
-          std::swap(heap_min[heap_max[index].second].second,
-                    heap_min[heap_max[2 * index + 2].second].second);
-          std::swap(heap_max[index], heap_max[2 * index + 2]);
-          index = 2 * index + 2;
-        } else {
-          std::swap(heap_min[heap_max[index].second].second,
-                    heap_min[heap_max[2 * index + 1].second].second);
-          std::swap(heap_max[index], heap_max[2 * index + 1]);
+  void SiftDownMin(int index) {
+    while (2 * index + 1 <= length_ - 1) {
+      if (2 * index + 1 == length_ - 1) {
+        if (heap_max_[index].first < heap_max_[2 * index + 1].first) {
+          std::swap(heap_min_[heap_max_[index].second].second,
+                    heap_min_[heap_max_[2 * index + 1].second].second);
+          std::swap(heap_max_[index], heap_max_[2 * index + 1]);
           index = 2 * index + 1;
+        } else {
+          break;
         }
       } else {
-        break;
+        if (heap_max_[index].first < heap_max_[2 * index + 1].first ||
+            heap_max_[index].first < heap_max_[2 * index + 2].first) {
+          if (heap_max_[2 * index + 1].first < heap_max_[2 * index + 2].first) {
+            std::swap(heap_min_[heap_max_[index].second].second,
+                      heap_min_[heap_max_[2 * index + 2].second].second);
+            std::swap(heap_max_[index], heap_max_[2 * index + 2]);
+            index = 2 * index + 2;
+          } else {
+            std::swap(heap_min_[heap_max_[index].second].second,
+                      heap_min_[heap_max_[2 * index + 1].second].second);
+            std::swap(heap_max_[index], heap_max_[2 * index + 1]);
+            index = 2 * index + 1;
+          }
+        } else {
+          break;
+        }
       }
     }
   }
-}
 
-void Insert(std::vector<std::pair<int, int>>& heap_min,
-            std::vector<std::pair<int, int>>& heap_max, int& length) {
-  int number;
-  std::cin >> number;
-  ++length;
-  heap_min.push_back(std::make_pair(number, length - 1));
-  heap_max.push_back(std::make_pair(number, length - 1));
-  SiftUpMin(heap_min, heap_max, length - 1);
-  SiftUpMax(heap_min, heap_max, length - 1);
-  std::cout << "ok"
-            << "\n";
-}
-
-void ExtractMin(std::vector<std::pair<int, int>>& heap_min,
-                std::vector<std::pair<int, int>>& heap_max, int& length) {
-  if (length > 0) {
-    std::cout << heap_min[0].first << "\n";
-    std::swap(heap_max[heap_min[0].second].second,
-              heap_max[heap_min[length - 1].second].second);
-    std::swap(heap_min[0], heap_min[length - 1]);
-    heap_min[heap_max[length - 1].second].second = heap_min[length - 1].second;
-    std::swap(heap_max[length - 1], heap_max[heap_min[length - 1].second]);
-    heap_max.pop_back();
-    SiftUpMax(heap_min, heap_max, heap_min[length - 1].second);
-    heap_min.pop_back();
-    SiftDownMax(heap_min, heap_max, length - 1, 0);
-    --length;
-  } else {
-    std::cout << "error"
-              << "\n";
+  void Insert() {
+    int number;
+    std::cin >> number;
+    ++length_;
+    heap_min_.push_back(std::make_pair(number, length_ - 1));
+    heap_max_.push_back(std::make_pair(number, length_ - 1));
+    SiftUpMin(length_ - 1);
+    SiftUpMax(length_ - 1);
+    std::cout << "ok" << std::endl;
   }
-}
 
-void GetMin(std::vector<std::pair<int, int>>& heap_min, int length) {
-  if (length > 0) {
-    std::cout << heap_min[0].first << "\n";
-  } else {
-    std::cout << "error"
-              << "\n";
+  void ExtractMin() {
+    if (length_ > 0) {
+      std::cout << heap_min_[0].first << std::endl;
+      std::swap(heap_max_[heap_min_[0].second].second,
+                heap_max_[heap_min_[length_ - 1].second].second);
+      std::swap(heap_min_[0], heap_min_[length_ - 1]);
+      heap_min_[heap_max_[length_ - 1].second].second =
+          heap_min_[length_ - 1].second;
+      std::swap(heap_max_[length_ - 1],
+                heap_max_[heap_min_[length_ - 1].second]);
+      heap_max_.pop_back();
+      SiftUpMax(heap_min_[length_ - 1].second);
+      heap_min_.pop_back();
+      --length_;
+      SiftDownMax(0);
+    } else {
+      std::cout << "error" << std::endl;
+    }
   }
-}
 
-void ExtractMax(std::vector<std::pair<int, int>>& heap_min,
-                std::vector<std::pair<int, int>>& heap_max, int& length) {
-  if (length > 0) {
-    std::cout << heap_max[0].first << "\n";
-    std::swap(heap_min[heap_max[0].second].second,
-              heap_min[heap_max[length - 1].second].second);
-    std::swap(heap_max[0], heap_max[length - 1]);
-    heap_max[heap_min[length - 1].second].second = heap_max[length - 1].second;
-    std::swap(heap_min[length - 1], heap_min[heap_max[length - 1].second]);
-    heap_min.pop_back();
-    SiftUpMin(heap_min, heap_max, heap_max[length - 1].second);
-    heap_max.pop_back();
-    SiftDownMin(heap_min, heap_max, length - 1, 0);
-    --length;
-  } else {
-    std::cout << "error"
-              << "\n";
+  void GetMin() {
+    if (length_ > 0) {
+      std::cout << heap_min_[0].first << std::endl;
+    } else {
+      std::cout << "error" << std::endl;
+    }
   }
-}
 
-void GetMax(std::vector<std::pair<int, int>>& heap_max, int length) {
-  if (length > 0) {
-    std::cout << heap_max[0].first << "\n";
-  } else {
-    std::cout << "error"
-              << "\n";
+  void ExtractMax() {
+    if (length_ > 0) {
+      std::cout << heap_max_[0].first << std::endl;
+      std::swap(heap_min_[heap_max_[0].second].second,
+                heap_min_[heap_max_[length_ - 1].second].second);
+      std::swap(heap_max_[0], heap_max_[length_ - 1]);
+      heap_max_[heap_min_[length_ - 1].second].second =
+          heap_max_[length_ - 1].second;
+      std::swap(heap_min_[length_ - 1],
+                heap_min_[heap_max_[length_ - 1].second]);
+      heap_min_.pop_back();
+      SiftUpMin(heap_max_[length_ - 1].second);
+      heap_max_.pop_back();
+      --length_;
+      SiftDownMin(0);
+    } else {
+      std::cout << "error" << std::endl;
+    }
   }
-}
 
-void Size(int length) { std::cout << length << "\n"; }
+  void GetMax() {
+    if (length_ > 0) {
+      std::cout << heap_max_[0].first << std::endl;
+    } else {
+      std::cout << "error" << std::endl;
+    }
+  }
 
-void Clear(std::vector<std::pair<int, int>>& heap_min,
-           std::vector<std::pair<int, int>>& heap_max, int& length) {
-  std::cout << "ok"
-            << "\n";
-  heap_min.clear();
-  heap_max.clear();
-  length = 0;
-}
+  void Size() const { std::cout << length_ << std::endl; }
+
+  void Clear() {
+    std::cout << "ok" << std::endl;
+    heap_min_.clear();
+    heap_max_.clear();
+    length_ = 0;
+  }
+};
 
 int main() {
   int questions;
   std::cin >> questions;
-  std::vector<std::pair<int, int>> heap_min(0);
-  std::vector<std::pair<int, int>> heap_max(0);
-  int length = 0;
+  Minimax minimax;
   std::string command;
   for (int question = 0; question < questions; ++question) {
     std::cin >> command;
     if (command == "insert") {
-      Insert(heap_min, heap_max, length);
+      minimax.Insert();
     } else if (command == "extract_min") {
-      ExtractMin(heap_min, heap_max, length);
+      minimax.ExtractMin();
     } else if (command == "get_min") {
-      GetMin(heap_min, length);
+      minimax.GetMin();
     } else if (command == "extract_max") {
-      ExtractMax(heap_min, heap_max, length);
+      minimax.ExtractMax();
     } else if (command == "get_max") {
-      GetMax(heap_max, length);
+      minimax.GetMax();
     } else if (command == "size") {
-      Size(length);
+      minimax.Size();
     } else if (command == "clear") {
-      Clear(heap_min, heap_max, length);
+      minimax.Clear();
     }
   }
 }
