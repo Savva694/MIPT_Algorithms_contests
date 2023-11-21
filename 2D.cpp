@@ -14,43 +14,39 @@ class DistributingHat {
       minimal_.pop_back();
     }
     minimal_.push_back(students_.back());
-    std::cout << "ok" << std::endl;
   }
 
-  void Dequeue() {
+  bool Dequeue() {
     if (students_.empty()) {
-      std::cout << "error" << std::endl;
-      return;
+      return false;
     }
     if (minimal_.front() == students_.front()) {
       minimal_.pop_front();
     }
     std::cout << students_.front() << std::endl;
     students_.pop_front();
+    return true;
   }
 
-  void Front() {
+  int Front() {
     if (students_.empty()) {
-      std::cout << "error" << std::endl;
-    } else {
-      std::cout << students_.front() << std::endl;
+      return 0;
     }
+    return students_.front();
   }
 
-  void Size() { std::cout << students_.size() << std::endl; }
+  size_t Size() { return students_.size(); }
 
   void Clear() {
     students_.clear();
     minimal_.clear();
-    std::cout << "ok" << std::endl;
   }
 
-  void SayMin() {
+  int GetMin() {
     if (minimal_.empty()) {
-      std::cout << "error" << std::endl;
-    } else {
-      std::cout << minimal_.front() << std::endl;
+      return 0;
     }
+    return minimal_.front();
   }
 };
 
@@ -65,16 +61,30 @@ int main() {
     if (command == "enqueue") {
       std::cin >> student;
       hat.Enqueue(student);
+      std::cout << "ok" << std::endl;
     } else if (command == "dequeue") {
-      hat.Dequeue();
+      if (!hat.Dequeue()) {
+        std::cout << "error" << std::endl;
+      }
     } else if (command == "front") {
-      hat.Front();
+      int front = hat.Front();
+      if (front == 0) {
+        std::cout << "error" << std::endl;
+      } else {
+        std::cout << front << std::endl;
+      }
     } else if (command == "size") {
-      hat.Size();
+      std::cout << hat.Size() << std::endl;
     } else if (command == "clear") {
       hat.Clear();
+      std::cout << "ok" << std::endl;
     } else {
-      hat.SayMin();
+      int min = hat.GetMin();
+      if (min == 0) {
+        std::cout << "error" << std::endl;
+      } else {
+        std::cout << min << std::endl;
+      }
     }
   }
   return 0;
