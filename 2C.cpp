@@ -2,31 +2,34 @@
 #include <iostream>
 #include <string>
 
-struct GoblinDeque {
-  std::deque<int> left;
-  std::deque<int> right;
+class GoblinDeque {
+ private:
+  std::deque<int> left_;
+  std::deque<int> right_;
 
+ public:
   void MakeDequeCorrect() {
-    if (left.size() > right.size()) {
-      right.push_back(left.front());
-      left.pop_front();
+    if (left_.size() > right_.size()) {
+      right_.push_back(left_.front());
+      left_.pop_front();
     }
   }
 
   void AddNewOrdinaryGoblin(int goblin) {
-    left.push_back(goblin);
-    this->MakeDequeCorrect();
+    left_.push_back(goblin);
+    MakeDequeCorrect();
   }
 
   void AddNewPrivilegedGoblin(int goblin) {
-    left.push_front(goblin);
-    this->MakeDequeCorrect();
+    left_.push_front(goblin);
+    MakeDequeCorrect();
   }
 
-  void DeleteGoblin() {
-    std::cout << right.front() << std::endl;
-    right.pop_front();
-    this->MakeDequeCorrect();
+  int DeleteGoblin() {
+    int deleting_goblin = right_.front();
+    right_.pop_front();
+    MakeDequeCorrect();
+    return deleting_goblin;
   }
 };
 
@@ -39,7 +42,7 @@ int main() {
   for (int request = 0; request < requests; ++request) {
     std::cin >> sign;
     if (sign == "-") {
-      goblin_queue.DeleteGoblin();
+      std::cout << goblin_queue.DeleteGoblin() << std::endl;
     } else if (sign == "+") {
       std::cin >> goblin;
       goblin_queue.AddNewOrdinaryGoblin(goblin);
