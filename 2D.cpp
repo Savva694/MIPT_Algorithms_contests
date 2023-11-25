@@ -16,16 +16,16 @@ class DistributingHat {
     minimal_.push_back(students_.back());
   }
 
-  bool Dequeue() {
+  int Dequeue() {
     if (students_.empty()) {
-      return false;
+      return 0;
     }
     if (minimal_.front() == students_.front()) {
       minimal_.pop_front();
     }
-    std::cout << students_.front() << std::endl;
+    int front_student = students_.front();
     students_.pop_front();
-    return true;
+    return front_student;
   }
 
   int Front() {
@@ -61,29 +61,37 @@ int main() {
     if (command == "enqueue") {
       std::cin >> student;
       hat.Enqueue(student);
-      std::cout << "ok" << std::endl;
+      std::cout << "ok"
+                << "\n";
     } else if (command == "dequeue") {
-      if (!hat.Dequeue()) {
-        std::cout << "error" << std::endl;
+      int front_student = hat.Dequeue();
+      if (front_student == 0) {
+        std::cout << "error"
+                  << "\n";
+      } else {
+        std::cout << front_student << "\n";
       }
     } else if (command == "front") {
-      int front = hat.Front();
-      if (front == 0) {
-        std::cout << "error" << std::endl;
+      int front_student = hat.Front();
+      if (front_student == 0) {
+        std::cout << "error"
+                  << "\n";
       } else {
-        std::cout << front << std::endl;
+        std::cout << front_student << "\n";
       }
     } else if (command == "size") {
-      std::cout << hat.Size() << std::endl;
+      std::cout << hat.Size() << "\n";
     } else if (command == "clear") {
       hat.Clear();
-      std::cout << "ok" << std::endl;
+      std::cout << "ok"
+                << "\n";
     } else {
       int min = hat.GetMin();
       if (min == 0) {
-        std::cout << "error" << std::endl;
+        std::cout << "error"
+                  << "\n";
       } else {
-        std::cout << min << std::endl;
+        std::cout << min << "\n";
       }
     }
   }
