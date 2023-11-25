@@ -7,7 +7,6 @@ class GoblinDeque {
   std::deque<int> left_;
   std::deque<int> right_;
 
- public:
   void MakeDequeCorrect() {
     if (left_.size() > right_.size()) {
       right_.push_back(left_.front());
@@ -15,6 +14,7 @@ class GoblinDeque {
     }
   }
 
+ public:
   void AddNewOrdinaryGoblin(int goblin) {
     left_.push_back(goblin);
     MakeDequeCorrect();
@@ -42,7 +42,7 @@ int main() {
   for (int request = 0; request < requests; ++request) {
     std::cin >> sign;
     if (sign == "-") {
-      std::cout << goblin_queue.DeleteGoblin() << std::endl;
+      std::cout << goblin_queue.DeleteGoblin() << "\n";
     } else if (sign == "+") {
       std::cin >> goblin;
       goblin_queue.AddNewOrdinaryGoblin(goblin);
