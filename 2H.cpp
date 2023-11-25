@@ -8,14 +8,25 @@ class Minimax {
   std::vector<std::pair<int, int>> heap_max_;
   int length_ = 0;
 
+  void SwapNodesInHeapMin(int& index_1, int index_2) {
+    std::swap(heap_max_[heap_min_[index_1].second].second,
+              heap_max_[heap_min_[index_2].second].second);
+    std::swap(heap_min_[index_1], heap_min_[index_2]);
+    index_1 = index_2;
+  }
+
+  void SwapNodesInHeapMax(int& index_1, int index_2) {
+    std::swap(heap_min_[heap_max_[index_1].second].second,
+              heap_min_[heap_max_[index_2].second].second);
+    std::swap(heap_max_[index_1], heap_max_[index_2]);
+    index_1 = index_2;
+  }
+
  public:
   void SiftUpMin(int index) {
     while (index > 0 &&
            heap_min_[index].first < heap_min_[(index - 1) / 2].first) {
-      std::swap(heap_max_[heap_min_[index].second].second,
-                heap_max_[heap_min_[(index - 1) / 2].second].second);
-      std::swap(heap_min_[index], heap_min_[(index - 1) / 2]);
-      index = (index - 1) / 2;
+      SwapNodesInHeapMin(index, (index - 1) / 2);
     }
   }
 
@@ -23,10 +34,7 @@ class Minimax {
     while (2 * index + 1 <= length_ - 1) {
       if (2 * index + 1 == length_ - 1) {
         if (heap_min_[index].first > heap_min_[2 * index + 1].first) {
-          std::swap(heap_max_[heap_min_[index].second].second,
-                    heap_max_[heap_min_[2 * index + 1].second].second);
-          std::swap(heap_min_[index], heap_min_[2 * index + 1]);
-          index = 2 * index + 1;
+          SwapNodesInHeapMin(index, 2 * index + 1);
         } else {
           break;
         }
@@ -34,15 +42,9 @@ class Minimax {
         if (heap_min_[index].first > heap_min_[2 * index + 1].first ||
             heap_min_[index].first > heap_min_[2 * index + 2].first) {
           if (heap_min_[2 * index + 1].first > heap_min_[2 * index + 2].first) {
-            std::swap(heap_max_[heap_min_[index].second].second,
-                      heap_max_[heap_min_[2 * index + 2].second].second);
-            std::swap(heap_min_[index], heap_min_[2 * index + 2]);
-            index = 2 * index + 2;
+            SwapNodesInHeapMin(index, 2 * index + 2);
           } else {
-            std::swap(heap_max_[heap_min_[index].second].second,
-                      heap_max_[heap_min_[2 * index + 1].second].second);
-            std::swap(heap_min_[index], heap_min_[2 * index + 1]);
-            index = 2 * index + 1;
+            SwapNodesInHeapMin(index, 2 * index + 1);
           }
         } else {
           break;
@@ -54,10 +56,7 @@ class Minimax {
   void SiftUpMax(int index) {
     while (index > 0 &&
            heap_max_[index].first > heap_max_[(index - 1) / 2].first) {
-      std::swap(heap_min_[heap_max_[index].second].second,
-                heap_min_[heap_max_[(index - 1) / 2].second].second);
-      std::swap(heap_max_[index], heap_max_[(index - 1) / 2]);
-      index = (index - 1) / 2;
+      SwapNodesInHeapMax(index, (index - 1) / 2);
     }
   }
 
@@ -65,10 +64,7 @@ class Minimax {
     while (2 * index + 1 <= length_ - 1) {
       if (2 * index + 1 == length_ - 1) {
         if (heap_max_[index].first < heap_max_[2 * index + 1].first) {
-          std::swap(heap_min_[heap_max_[index].second].second,
-                    heap_min_[heap_max_[2 * index + 1].second].second);
-          std::swap(heap_max_[index], heap_max_[2 * index + 1]);
-          index = 2 * index + 1;
+          SwapNodesInHeapMax(index, 2 * index + 1);
         } else {
           break;
         }
@@ -76,15 +72,9 @@ class Minimax {
         if (heap_max_[index].first < heap_max_[2 * index + 1].first ||
             heap_max_[index].first < heap_max_[2 * index + 2].first) {
           if (heap_max_[2 * index + 1].first < heap_max_[2 * index + 2].first) {
-            std::swap(heap_min_[heap_max_[index].second].second,
-                      heap_min_[heap_max_[2 * index + 2].second].second);
-            std::swap(heap_max_[index], heap_max_[2 * index + 2]);
-            index = 2 * index + 2;
+            SwapNodesInHeapMax(index, 2 * index + 2);
           } else {
-            std::swap(heap_min_[heap_max_[index].second].second,
-                      heap_min_[heap_max_[2 * index + 1].second].second);
-            std::swap(heap_max_[index], heap_max_[2 * index + 1]);
-            index = 2 * index + 1;
+            SwapNodesInHeapMax(index, 2 * index + 1);
           }
         } else {
           break;
