@@ -46,8 +46,8 @@ class BinaryHeap {
   }
 
   void Insert(long long number) {
-    operations_.push_back(length_++);
-    heap_.push_back(
+    operations_.emplace_back(length_++);
+    heap_.emplace_back(
         std::make_pair(number, static_cast<int>(operations_.size()) - 1));
     SiftUp(length_ - 1);
   }
