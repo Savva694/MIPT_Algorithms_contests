@@ -87,8 +87,8 @@ class Minimax {
     int number;
     std::cin >> number;
     ++length_;
-    heap_min_.push_back(std::make_pair(number, length_ - 1));
-    heap_max_.push_back(std::make_pair(number, length_ - 1));
+    heap_min_.emplace_back(std::make_pair(number, length_ - 1));
+    heap_max_.emplace_back(std::make_pair(number, length_ - 1));
     SiftUpMin(length_ - 1);
     SiftUpMax(length_ - 1);
     std::cout << "ok" << std::endl;
