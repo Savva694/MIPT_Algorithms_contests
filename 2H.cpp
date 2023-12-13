@@ -87,73 +87,67 @@ class Minimax {
     int number;
     std::cin >> number;
     ++length_;
-    heap_min_.emplace_back(std::make_pair(number, length_ - 1));
-    heap_max_.emplace_back(std::make_pair(number, length_ - 1));
+    heap_min_.emplace_back(number, length_ - 1);
+    heap_max_.emplace_back(number, length_ - 1);
     SiftUpMin(length_ - 1);
     SiftUpMax(length_ - 1);
-    std::cout << "ok" << std::endl;
   }
 
-  void ExtractMin() {
-    if (length_ > 0) {
-      std::cout << heap_min_[0].first << std::endl;
-      std::swap(heap_max_[heap_min_[0].second].second,
-                heap_max_[heap_min_[length_ - 1].second].second);
-      std::swap(heap_min_[0], heap_min_[length_ - 1]);
-      heap_min_[heap_max_[length_ - 1].second].second =
-          heap_min_[length_ - 1].second;
-      std::swap(heap_max_[length_ - 1],
-                heap_max_[heap_min_[length_ - 1].second]);
-      heap_max_.pop_back();
-      SiftUpMax(heap_min_[length_ - 1].second);
-      heap_min_.pop_back();
-      --length_;
-      SiftDownMax(0);
-    } else {
-      std::cout << "error" << std::endl;
+  int ExtractMin() {
+    if (length_ == 0) {
+      return 0;
     }
+    int answer = heap_min_[0].first;
+    std::swap(heap_max_[heap_min_[0].second].second,
+              heap_max_[heap_min_[length_ - 1].second].second);
+    std::swap(heap_min_[0], heap_min_[length_ - 1]);
+    heap_min_[heap_max_[length_ - 1].second].second =
+        heap_min_[length_ - 1].second;
+    std::swap(heap_max_[length_ - 1], heap_max_[heap_min_[length_ - 1].second]);
+    heap_max_.pop_back();
+    SiftUpMax(heap_min_[length_ - 1].second);
+    heap_min_.pop_back();
+    --length_;
+    SiftDownMax(0);
+    return answer;
   }
 
-  void GetMin() {
+  int GetMin() {
     if (length_ > 0) {
-      std::cout << heap_min_[0].first << std::endl;
-    } else {
-      std::cout << "error" << std::endl;
+      return heap_min_[0].first;
     }
+    return 0;
   }
 
-  void ExtractMax() {
+  int ExtractMax() {
+    if (length_ == 0) {
+      return 0;
+    }
+    int answer = heap_max_[0].first;
+    std::swap(heap_min_[heap_max_[0].second].second,
+              heap_min_[heap_max_[length_ - 1].second].second);
+    std::swap(heap_max_[0], heap_max_[length_ - 1]);
+    heap_max_[heap_min_[length_ - 1].second].second =
+        heap_max_[length_ - 1].second;
+    std::swap(heap_min_[length_ - 1], heap_min_[heap_max_[length_ - 1].second]);
+    heap_min_.pop_back();
+    SiftUpMin(heap_max_[length_ - 1].second);
+    heap_max_.pop_back();
+    --length_;
+    SiftDownMin(0);
+    return answer;
+  }
+
+  int GetMax() {
     if (length_ > 0) {
-      std::cout << heap_max_[0].first << std::endl;
-      std::swap(heap_min_[heap_max_[0].second].second,
-                heap_min_[heap_max_[length_ - 1].second].second);
-      std::swap(heap_max_[0], heap_max_[length_ - 1]);
-      heap_max_[heap_min_[length_ - 1].second].second =
-          heap_max_[length_ - 1].second;
-      std::swap(heap_min_[length_ - 1],
-                heap_min_[heap_max_[length_ - 1].second]);
-      heap_min_.pop_back();
-      SiftUpMin(heap_max_[length_ - 1].second);
-      heap_max_.pop_back();
-      --length_;
-      SiftDownMin(0);
-    } else {
-      std::cout << "error" << std::endl;
+      return heap_max_[0].first;
     }
+    return 0;
   }
 
-  void GetMax() {
-    if (length_ > 0) {
-      std::cout << heap_max_[0].first << std::endl;
-    } else {
-      std::cout << "error" << std::endl;
-    }
-  }
-
-  void Size() const { std::cout << length_ << std::endl; }
+  int Size() const { return length_; }
 
   void Clear() {
-    std::cout << "ok" << std::endl;
     heap_min_.clear();
     heap_max_.clear();
     length_ = 0;
@@ -169,18 +163,40 @@ int main() {
     std::cin >> command;
     if (command == "insert") {
       minimax.Insert();
+      std::cout << "ok\n";
     } else if (command == "extract_min") {
-      minimax.ExtractMin();
+      int answer = minimax.ExtractMin();
+      if (answer != 0) {
+        std::cout << answer << "\n";
+      } else {
+        std::cout << "error\n";
+      }
     } else if (command == "get_min") {
-      minimax.GetMin();
+      int answer = minimax.GetMin();
+      if (answer != 0) {
+        std::cout << answer << "\n";
+      } else {
+        std::cout << "error\n";
+      }
     } else if (command == "extract_max") {
-      minimax.ExtractMax();
+      int answer = minimax.ExtractMax();
+      if (answer != 0) {
+        std::cout << answer << "\n";
+      } else {
+        std::cout << "error\n";
+      }
     } else if (command == "get_max") {
-      minimax.GetMax();
+      int answer = minimax.GetMax();
+      if (answer != 0) {
+        std::cout << answer << "\n";
+      } else {
+        std::cout << "error\n";
+      }
     } else if (command == "size") {
-      minimax.Size();
+      std::cout << minimax.Size() << "\n";
     } else if (command == "clear") {
       minimax.Clear();
+      std::cout << "ok\n";
     }
   }
 }
