@@ -22,66 +22,96 @@ class Minimax {
     index_1 = index_2;
   }
 
+  int ExtractSomething(std::vector<std::pair<int, int>>& heap_first,
+                       std::vector<std::pair<int, int>>& heap_second,
+                       bool is_min) {
+    if (length_ == 0) {
+      return 0;
+    }
+    int answer = heap_first[0].first;
+    std::swap(heap_second[heap_first[0].second].second,
+              heap_second[heap_first[length_ - 1].second].second);
+    std::swap(heap_first[0], heap_first[length_ - 1]);
+    heap_first[heap_second[length_ - 1].second].second =
+        heap_first[length_ - 1].second;
+    std::swap(heap_second[length_ - 1],
+              heap_second[heap_first[length_ - 1].second]);
+    heap_second.pop_back();
+    if (is_min) {
+      SiftUpMax(heap_first[length_ - 1].second);
+    } else {
+      SiftUpMin(heap_first[length_ - 1].second);
+    }
+    heap_first.pop_back();
+    --length_;
+    if (is_min) {
+      SiftDownMax(0);
+    } else {
+      SiftDownMin(0);
+    }
+    return answer;
+  }
+
+  int GetSomething(std::vector<std::pair<int, int>>& heap) const {
+    if (length_ > 0) {
+      return heap[0].first;
+    }
+    return 0;
+  }
+
+  bool CompareElementsInHeaps(int index_1, int index_2, bool is_min) {
+    if (is_min) {
+      return heap_max_[index_1].first < heap_max_[index_2].first;
+    }
+    return heap_min_[index_1].first > heap_min_[index_2].first;
+  }
+
+  void SwapNodes(int& index_1, int index_2, bool is_min) {
+    if (is_min) {
+      SwapNodesInHeapMin(index_1, index_2);
+    } else {
+      SwapNodesInHeapMax(index_1, index_2);
+    }
+  }
+
+  void SiftUpSomething(int index, bool is_min) {
+    while (index > 0 &&
+           CompareElementsInHeaps((index - 1) / 2, index, !is_min)) {
+      SwapNodes(index, (index - 1) / 2, is_min);
+    }
+  }
+
+  void SiftDownSomething(int index, bool is_min) {
+    while (2 * index + 1 <= length_ - 1) {
+      if (2 * index + 1 == length_ - 1) {
+        if (CompareElementsInHeaps(index, 2 * index + 1, !is_min)) {
+          SwapNodes(index, 2 * index + 1, is_min);
+        } else {
+          break;
+        }
+      } else {
+        if (CompareElementsInHeaps(index, 2 * index + 1, !is_min) ||
+            CompareElementsInHeaps(index, 2 * index + 2, !is_min)) {
+          if (CompareElementsInHeaps(2 * index + 1, 2 * index + 2, !is_min)) {
+            SwapNodes(index, 2 * index + 2, is_min);
+          } else {
+            SwapNodes(index, 2 * index + 1, is_min);
+          }
+        } else {
+          break;
+        }
+      }
+    }
+  }
+
  public:
-  void SiftUpMin(int index) {
-    while (index > 0 &&
-           heap_min_[index].first < heap_min_[(index - 1) / 2].first) {
-      SwapNodesInHeapMin(index, (index - 1) / 2);
-    }
-  }
+  void SiftUpMin(int index) { SiftUpSomething(index, true); }
 
-  void SiftDownMax(int index) {
-    while (2 * index + 1 <= length_ - 1) {
-      if (2 * index + 1 == length_ - 1) {
-        if (heap_min_[index].first > heap_min_[2 * index + 1].first) {
-          SwapNodesInHeapMin(index, 2 * index + 1);
-        } else {
-          break;
-        }
-      } else {
-        if (heap_min_[index].first > heap_min_[2 * index + 1].first ||
-            heap_min_[index].first > heap_min_[2 * index + 2].first) {
-          if (heap_min_[2 * index + 1].first > heap_min_[2 * index + 2].first) {
-            SwapNodesInHeapMin(index, 2 * index + 2);
-          } else {
-            SwapNodesInHeapMin(index, 2 * index + 1);
-          }
-        } else {
-          break;
-        }
-      }
-    }
-  }
+  void SiftDownMax(int index) { SiftDownSomething(index, true); }
 
-  void SiftUpMax(int index) {
-    while (index > 0 &&
-           heap_max_[index].first > heap_max_[(index - 1) / 2].first) {
-      SwapNodesInHeapMax(index, (index - 1) / 2);
-    }
-  }
+  void SiftUpMax(int index) { SiftUpSomething(index, false); }
 
-  void SiftDownMin(int index) {
-    while (2 * index + 1 <= length_ - 1) {
-      if (2 * index + 1 == length_ - 1) {
-        if (heap_max_[index].first < heap_max_[2 * index + 1].first) {
-          SwapNodesInHeapMax(index, 2 * index + 1);
-        } else {
-          break;
-        }
-      } else {
-        if (heap_max_[index].first < heap_max_[2 * index + 1].first ||
-            heap_max_[index].first < heap_max_[2 * index + 2].first) {
-          if (heap_max_[2 * index + 1].first < heap_max_[2 * index + 2].first) {
-            SwapNodesInHeapMax(index, 2 * index + 2);
-          } else {
-            SwapNodesInHeapMax(index, 2 * index + 1);
-          }
-        } else {
-          break;
-        }
-      }
-    }
-  }
+  void SiftDownMin(int index) { SiftDownSomething(index, false); }
 
   void Insert() {
     int number;
@@ -93,57 +123,13 @@ class Minimax {
     SiftUpMax(length_ - 1);
   }
 
-  int ExtractMin() {
-    if (length_ == 0) {
-      return 0;
-    }
-    int answer = heap_min_[0].first;
-    std::swap(heap_max_[heap_min_[0].second].second,
-              heap_max_[heap_min_[length_ - 1].second].second);
-    std::swap(heap_min_[0], heap_min_[length_ - 1]);
-    heap_min_[heap_max_[length_ - 1].second].second =
-        heap_min_[length_ - 1].second;
-    std::swap(heap_max_[length_ - 1], heap_max_[heap_min_[length_ - 1].second]);
-    heap_max_.pop_back();
-    SiftUpMax(heap_min_[length_ - 1].second);
-    heap_min_.pop_back();
-    --length_;
-    SiftDownMax(0);
-    return answer;
-  }
+  int ExtractMin() { return ExtractSomething(heap_min_, heap_max_, true); }
 
-  int GetMin() {
-    if (length_ > 0) {
-      return heap_min_[0].first;
-    }
-    return 0;
-  }
+  int GetMin() { return GetSomething(heap_min_); }
 
-  int ExtractMax() {
-    if (length_ == 0) {
-      return 0;
-    }
-    int answer = heap_max_[0].first;
-    std::swap(heap_min_[heap_max_[0].second].second,
-              heap_min_[heap_max_[length_ - 1].second].second);
-    std::swap(heap_max_[0], heap_max_[length_ - 1]);
-    heap_max_[heap_min_[length_ - 1].second].second =
-        heap_max_[length_ - 1].second;
-    std::swap(heap_min_[length_ - 1], heap_min_[heap_max_[length_ - 1].second]);
-    heap_min_.pop_back();
-    SiftUpMin(heap_max_[length_ - 1].second);
-    heap_max_.pop_back();
-    --length_;
-    SiftDownMin(0);
-    return answer;
-  }
+  int ExtractMax() { return ExtractSomething(heap_max_, heap_min_, false); }
 
-  int GetMax() {
-    if (length_ > 0) {
-      return heap_max_[0].first;
-    }
-    return 0;
-  }
+  int GetMax() { return GetSomething(heap_max_); }
 
   int Size() const { return length_; }
 
