@@ -23,11 +23,11 @@ class SegmentTree {
 
   void CreateSegmentTree(int height) {
     if (height == 1) {
-      nodes_.push_back(Node(0, -1, -1));
+      nodes_.emplace_back(0, -1, -1);
       return;
     }
     int length = static_cast<int>(nodes_.size());
-    nodes_.push_back(Node(0, length + 1, -1));
+    nodes_.emplace_back(0, length + 1, -1);
     CreateSegmentTree(height - 1);
     nodes_[length].right_child = static_cast<int>(nodes_.size());
     CreateSegmentTree(height - 1);
@@ -73,19 +73,6 @@ class SegmentTree {
     }
   }
 
- public:
-  SegmentTree(int length, std::vector<std::pair<int, int>>& new_numbers) {
-    numbers_ = new_numbers;
-    std::sort(numbers_.begin(), numbers_.end());
-    tree_size_ =
-        static_cast<int>(pow(2, static_cast<int>(log2(length - 1)) + 1));
-    int height = static_cast<int>(log2(tree_size_)) + 1;
-    CreateSegmentTree(height);
-    main_nodes_.resize(length + 1);
-    main_nodes_[0] = 0;
-    AddBranches(length);
-  }
-
   int GiveSumOnSegment(int start, int left, int right, int first_pos,
                        int second_pos) {
     if (left <= first_pos && second_pos <= right) {
@@ -107,6 +94,19 @@ class SegmentTree {
   int GiveSumOnSegment(int left, int right, int number) {
     return GiveSumOnSegment(main_nodes_[number], left - 1, right - 1, 0,
                             tree_size_ - 1);
+  }
+
+ public:
+  SegmentTree(int length, std::vector<std::pair<int, int>>& new_numbers) {
+    numbers_ = new_numbers;
+    std::sort(numbers_.begin(), numbers_.end());
+    tree_size_ =
+        static_cast<int>(pow(2, static_cast<int>(log2(length - 1)) + 1));
+    int height = static_cast<int>(log2(tree_size_)) + 1;
+    CreateSegmentTree(height);
+    main_nodes_.resize(length + 1);
+    main_nodes_[0] = 0;
+    AddBranches(length);
   }
 
   int GiveSumOnSegmentInThisBorder(int left, int right, int lower, int upper) {
