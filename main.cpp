@@ -17,15 +17,9 @@ size_t BinarySearch(std::vector<int>& numbers, size_t left, size_t right,
   return BinarySearch(numbers, left, middle, elem);
 }
 
-int main() {
-  size_t number_count;
-  std::cin >> number_count;
-  std::vector<int> numbers(number_count);
-
-  for (size_t i = 0; i < number_count; ++i) {
-    std::cin >> numbers[i];
-  }
-
+void LargestNonDecreasingSubsequence(const std::vector<int>& numbers,
+                                     std::stack<int>& sequence) {
+  size_t number_count = numbers.size();
   std::vector<int> max_last_num(number_count, -kInf);
   std::vector<size_t> index_changes(number_count);
   size_t length = 0;
@@ -41,7 +35,6 @@ int main() {
 
   std::cout << length << "\n";
   size_t index = length - 1;
-  std::stack<int> sequence;
 
   for (size_t i = number_count; i > 0; --i) {
     if (index_changes[i - 1] == index) {
@@ -49,6 +42,19 @@ int main() {
       --index;
     }
   }
+}
+
+int main() {
+  size_t number_count;
+  std::cin >> number_count;
+  std::vector<int> numbers(number_count);
+
+  for (size_t i = 0; i < number_count; ++i) {
+    std::cin >> numbers[i];
+  }
+
+  std::stack<int> sequence;
+  LargestNonDecreasingSubsequence(numbers, sequence);
 
   while (!sequence.empty()) {
     std ::cout << sequence.top() << " ";
