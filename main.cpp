@@ -3,8 +3,8 @@
 
 int main() {
   std::ios_base::sync_with_stdio(false);
-  std::cin.tie(0);
-  std::cout.tie(0);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
   size_t height;
   size_t planes;
   std::cin >> height;
