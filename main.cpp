@@ -1,23 +1,11 @@
 #include <iostream>
 #include <vector>
 
-int main() {
-  size_t count;
-  int sum_weight;
-  std::cin >> count;
-  std::cin >> sum_weight;
-  std::vector<int> weights(count);
-  std::vector<int> values(count);
-
-  for (size_t i = 0; i < count; ++i) {
-    std::cin >> weights[i];
-  }
-  for (size_t i = 0; i < count; ++i) {
-    std::cin >> values[i];
-  }
-
+void BackpackProblem(int sum_weight, std::vector<int>& weights,
+                     std::vector<int>& values,
+                     std::vector<std::vector<bool>>& last_move) {
+  size_t count = weights.size();
   std::vector<std::vector<int>> max_sum_of_values(count + 1);
-  std::vector<std::vector<bool>> last_move(count + 1);
 
   for (size_t i = 0; i <= count; ++i) {
     max_sum_of_values[i].resize(sum_weight + 1);
@@ -40,6 +28,25 @@ int main() {
       }
     }
   }
+}
+
+int main() {
+  size_t count;
+  int sum_weight;
+  std::cin >> count;
+  std::cin >> sum_weight;
+  std::vector<int> weights(count);
+  std::vector<int> values(count);
+
+  for (size_t i = 0; i < count; ++i) {
+    std::cin >> weights[i];
+  }
+  for (size_t i = 0; i < count; ++i) {
+    std::cin >> values[i];
+  }
+
+  std::vector<std::vector<bool>> last_move(count + 1);
+  BackpackProblem(sum_weight, weights, values, last_move);
 
   int weight_now = sum_weight;
   for (size_t i = count; i > 0; --i) {
