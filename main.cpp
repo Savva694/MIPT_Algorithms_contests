@@ -1,75 +1,107 @@
 #include <algorithm>
 #include <iostream>
 #include <set>
-#include <stack>
 #include <vector>
 
-size_t my_time = 0;
-size_t kss_count = 0;
-
 struct Node {
-  size_t vert;
+  size_t vertex;
   int color;
-  size_t tin;
-  size_t tout;
-  size_t ret;
+  size_t time_in;
+  size_t time_out;
+  size_t highest_reachable_vertex;
 
-  Node() : vert(-1), color(-1), tin(-1), tout(-1), ret(-1) {}
+  Node()
+      : vertex(-1),
+        color(-1),
+        time_in(-1),
+        time_out(-1),
+        highest_reachable_vertex(-1) {}
 
-  Node(size_t vert) : vert(vert), color(0), tin(-1), tout(-1), ret(-1) {}
+  Node(size_t vertex)
+      : vertex(vertex),
+        color(0),
+        time_in(-1),
+        time_out(-1),
+        highest_reachable_vertex(-1) {}
 
   Node(const Node& other)
-      : vert(other.vert),
+      : vertex(other.vertex),
         color(other.color),
-        tin(other.tin),
-        tout(other.tout),
-        ret(other.ret) {}
+        time_in(other.time_in),
+        time_out(other.time_out),
+        highest_reachable_vertex(other.highest_reachable_vertex) {}
 
   Node& operator=(const Node& other) {
-    vert = other.vert;
+    vertex = other.vertex;
     color = other.color;
-    tin = other.tin;
-    tout = other.tout;
-    ret = other.ret;
+    time_in = other.time_in;
+    time_out = other.time_out;
+    highest_reachable_vertex = other.highest_reachable_vertex;
     return *this;
   }
 };
 
+namespace DfsVariables {
+size_t my_time = 0;
+size_t strong_connectivity_component_count = 0;
 std::vector<Node> vertices;
 std::vector<std::set<size_t>> edges;
 std::vector<std::set<size_t>> reverse_edges;
+}  // namespace DfsVariables
 
 void Dfs(size_t vertex, const std::vector<std::set<size_t>>& local_edges) {
-  ++my_time;
-  vertices[vertex].color = 1;
-  vertices[vertex].tin = my_time;
-  vertices[vertex].ret = kss_count;
+  ++DfsVariables::my_time;
+  DfsVariables::vertices[vertex].color = 1;
+  DfsVariables::vertices[vertex].time_in = DfsVariables::my_time;
+  DfsVariables::vertices[vertex].highest_reachable_vertex =
+      DfsVariables::strong_connectivity_component_count;
   for (int neighbour : local_edges[vertex]) {
-    if (vertices[neighbour].color == 0) {
-      vertices[neighbour].color = 1;
-      ++my_time;
+    if (DfsVariables::vertices[neighbour].color == 0) {
+      DfsVariables::vertices[neighbour].color = 1;
       Dfs(neighbour, local_edges);
-      ++my_time;
+      ++DfsVariables::my_time;
     }
   }
-  vertices[vertex].color = 2;
-  vertices[vertex].tout = my_time;
+  DfsVariables::vertices[vertex].color = 2;
+  DfsVariables::vertices[vertex].time_out = DfsVariables::my_time;
 }
 
-bool CompareTout(Node first, Node second) { return first.tout > second.tout; }
+bool CompareTout(Node first, Node second) {
+  return first.time_out > second.time_out;
+}
 
-bool CompareVert(Node first, Node second) { return first.vert < second.vert; }
+void FindStrongConnectivityComponents() {
+  size_t vertex_count = DfsVariables::vertices.size();
+  for (size_t i = 0; i < vertex_count; ++i) {
+    if (DfsVariables::vertices[i].color == 0) {
+      Dfs(i, DfsVariables::edges);
+    }
+  }
+
+  std::vector<Node> vertexes_copy = DfsVariables::vertices;
+  sort(vertexes_copy.begin(), vertexes_copy.end(), CompareTout);
+  for (size_t i = 0; i < vertex_count; ++i) {
+    DfsVariables::vertices[i].color = 0;
+  }
+
+  for (size_t i = 0; i < vertex_count; ++i) {
+    if (DfsVariables::vertices[vertexes_copy[i].vertex].color == 0) {
+      ++DfsVariables::strong_connectivity_component_count;
+      Dfs(vertexes_copy[i].vertex, DfsVariables::reverse_edges);
+    }
+  }
+}
 
 int main() {
   size_t vertex_count;
   size_t edge_count;
   std::cin >> vertex_count;
   std::cin >> edge_count;
-  vertices.resize(vertex_count);
-  edges.resize(vertex_count);
-  reverse_edges.resize(vertex_count);
+  DfsVariables::vertices.resize(vertex_count);
+  DfsVariables::edges.resize(vertex_count);
+  DfsVariables::reverse_edges.resize(vertex_count);
   for (size_t i = 0; i < vertex_count; ++i) {
-    vertices[i] = Node(i);
+    DfsVariables::vertices[i] = Node(i);
   }
 
   size_t vertex_1;
@@ -77,31 +109,14 @@ int main() {
   for (size_t i = 0; i < edge_count; ++i) {
     std::cin >> vertex_1;
     std::cin >> vertex_2;
-    edges[vertex_1 - 1].insert(vertex_2 - 1);
-    reverse_edges[vertex_2 - 1].insert(vertex_1 - 1);
+    DfsVariables::edges[vertex_1 - 1].insert(vertex_2 - 1);
+    DfsVariables::reverse_edges[vertex_2 - 1].insert(vertex_1 - 1);
   }
 
-  for (size_t i = 0; i < vertex_count; ++i) {
-    if (vertices[i].color == 0) {
-      Dfs(i, edges);
-    }
-  }
+  FindStrongConnectivityComponents();
 
-  std::vector<Node> vertexes_copy = vertices;
-  sort(vertexes_copy.begin(), vertexes_copy.end(), CompareTout);
+  std::cout << DfsVariables::strong_connectivity_component_count << "\n";
   for (size_t i = 0; i < vertex_count; ++i) {
-    vertices[i].color = 0;
-  }
-
-  for (size_t i = 0; i < vertex_count; ++i) {
-    if (vertices[vertexes_copy[i].vert].color == 0) {
-      ++kss_count;
-      Dfs(vertexes_copy[i].vert, reverse_edges);
-    }
-  }
-
-  std::cout << kss_count << "\n";
-  for (size_t i = 0; i < vertex_count; ++i) {
-    std::cout << vertices[i].ret << " ";
+    std::cout << DfsVariables::vertices[i].highest_reachable_vertex << " ";
   }
 }
