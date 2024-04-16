@@ -1,9 +1,9 @@
 #include <iostream>
 #include <vector>
 
-void BackpackProblem(int sum_weight, std::vector<int>& weights,
-                     std::vector<int>& values,
-                     std::vector<std::vector<bool>>& last_move) {
+std::vector<size_t> BackpackProblem(int sum_weight, std::vector<int>& weights,
+                                    std::vector<int>& values,
+                                    std::vector<std::vector<bool>>& last_move) {
   size_t count = weights.size();
   std::vector<std::vector<int>> max_sum_of_values(count + 1);
 
@@ -28,6 +28,18 @@ void BackpackProblem(int sum_weight, std::vector<int>& weights,
       }
     }
   }
+
+  int weight_now = sum_weight;
+  std::vector<size_t> elements;
+
+  for (size_t i = count; i > 0; --i) {
+    if (weight_now >= 0 && last_move[i][weight_now]) {
+      elements.push_back(i);
+      weight_now -= weights[i - 1];
+    }
+  }
+
+  return elements;
 }
 
 int main() {
@@ -46,13 +58,10 @@ int main() {
   }
 
   std::vector<std::vector<bool>> last_move(count + 1);
-  BackpackProblem(sum_weight, weights, values, last_move);
+  std::vector<size_t> elements =
+      BackpackProblem(sum_weight, weights, values, last_move);
 
-  int weight_now = sum_weight;
-  for (size_t i = count; i > 0; --i) {
-    if (weight_now >= 0 && last_move[i][weight_now]) {
-      std::cout << i << "\n";
-      weight_now -= weights[i - 1];
-    }
+  for (size_t element : elements) {
+    std::cout << element << "\n";
   }
 }
