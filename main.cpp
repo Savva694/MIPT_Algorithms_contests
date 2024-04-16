@@ -67,7 +67,7 @@ class Graph {
   }
 
  public:
-  Graph(size_t vertex_count, std::vector<std::set<size_t>> edges)
+  Graph(size_t vertex_count, const std::vector<std::set<size_t>>& edges)
       : edges_(edges) {
     vertices_.resize(vertex_count);
     for (size_t i = 0; i < vertex_count; ++i) {
